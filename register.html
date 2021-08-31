@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form id="form">
+        <div class="container">
+            <h1>Registrar</h1>
+            <hr>
+
+            <label for="email"><b>Email</b></label>
+            <input type="email" placeholder="Enter E-mail" name="username">
+
+            <label for="password"><b>Password</b></label>
+            <input type="password" placeholder="Enter Password" name="password">
+
+            <label for="passwd-repeat"><b>Repeat Password</b></label>
+            <input type="password" placeholder="Repeat Password" name="repeat">
+
+            <div>
+                <button type="button" onclick="register()">Sign Up</button>
+            </div>
+        </div>
+    </form>
+
+    <script>
+        const register = async () => {
+            const formData = new FormData(form);
+            const arrDados = {};
+            for (const pair of formData) {
+                arrDados[pair[0]] = pair[1];
+            }
+            
+            const meuJson = JSON.stringify(arrDados);
+
+            fetch('http://localhost:8000/register', {
+                method: 'post',
+                body: meuJson
+            })
+            .then(async (response) => {
+                
+                console.log(response);  
+                text = await response.text();
+
+                try {
+                    console.log(text);
+                    let obj = JSON.parse(text);
+                    alert(obj.data.mensagem);
+                } catch (error) {
+                    console.error(error);
+                }
+            })
+            .catch((error) => console.log(error));
+        }
+    </script>
+</body>
+</html>

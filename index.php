@@ -1,7 +1,7 @@
 <?php
 
 require_once 'vendor/autoload.php';
-use GenFin\Kernel\Kernel;
+use PhpFinance\Kernel\Kernel;
 
 $kernel = new Kernel();
 $kernel->bootstrap();

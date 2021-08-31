@@ -15,10 +15,8 @@ class JsonResponse
     public function process()
     {
         http_response_code($this->code);
-        $json = json_encode([
+        return json_encode([
             'data' => $this->data
         ]);
-        
-        return $json;
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+namespace phpFinance\Kernel;
 use stdClass;
 use PhpFinance\Lib\JsonResponse;
 
@@ -12,6 +13,7 @@ class Kernel
     public function bootstrap()
     {
         try {
+           $this->setupDefaultErrorHandling();
            $this->setCorsHeaders();
            $this->handleRequest();
            $this->loadRoute();
@@ -25,6 +27,25 @@ class Kernel
         }
     }
 
+    private function setupDefaultErrorHandling() {
+        set_error_handler(function (int $errNo, string $errMsg, string $file, int $line) {
+            file_put_contents(
+                'errorLog.html',
+                "1; [$errNo] [$errMsg] [$file] [$line]",
+                FILE_APPEND
+            );
+        });
+        set_exception_handler(function (\Throwable $exception) {
+            file_put_contents(
+                'errorLog.html',
+                "2; [$exception->getMessage()] [$exception->getFile()] [$exception->getLine()]",
+                FILE_APPEND
+            );
+//            $message =  "Error: ".$exception->getMessage();
+//            $response = new JsonResponse(['message' => $message], 500);
+//            echo $response->process();
+        });
+    }
     private function setCorsHeaders()
     {
         header("Access-Control-Allow-Origin: *");
@@ -33,7 +54,7 @@ class Kernel
 
     private function handleRequest()
     {
-        $request = json_decode(file_get_contents(('php://input')));
+        $request = json_decode(file_get_contents('php://input'));
         if ($request == null)
             $request = new stdClass();
         
@@ -41,7 +62,7 @@ class Kernel
             $request->$key = $value;
         }
 
-        $request->token_awt = isset($_SERVER['HTTP_AUTHORIZATION']) ? $_SERVER['HTTP_AUTHORIZATION'] : null;
+        // $request->token_awt = isset($_SERVER['HTTP_AUTHORIZATION']) ? $_SERVER['HTTP_AUTHORIZATION'] : null;
 
         $uriTratamento = $_SERVER['REQUEST_URI'];
         $uriTratamento = explode('?', $uriTratamento);
@@ -54,7 +75,8 @@ class Kernel
     private function loadRoute()
     {
         $rotas = [];
-        $rotas["GET"]["/login"] = ['AuthController', "login"];
+        $rotas["POST"]["/login"] = ['AuthController', "login"];
+        $rotas["POST"]["/register"] = ['AuthController', "register"];
         $this->rotas = $rotas;
     }
 
@@ -65,8 +87,10 @@ class Kernel
             $meuController = $this->instanciaClasse($this->rotas[$this->method][$this->uri][0]);
             $response = $this->executaMetodo($meuController, $this->rotas[$this->method][$this->uri][1], [$this->request]);
         } else {
-            file_put_contents('logRotas.html', "Rota não encontrada!")
+            file_put_contents('logRotas.html', "Rota não encontrada!" . '<br>', FILE_APPEND);
+            $response = new JsonResponse(['mensagem' => 'Rota não encontrada'], 405);
         }
+        echo $response->process();
     }
 
     private function instanciaClasse($nomeDaClasse)
