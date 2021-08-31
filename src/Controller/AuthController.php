@@ -1,11 +1,12 @@
 <?php
 
 namespace PhpFinance\Controller;
+
 use Exception;
 use PhpFinance\Database\DbConnectionFactory;
 use PhpFinance\Lib\JsonResponse;
 
-class AuthController
+class AuthController extends Controller
 {
     public function login($request)
     {
@@ -26,7 +27,7 @@ class AuthController
                 throw new \Exception("Usuário não encontrado");
             }
 
-            if (!password_verify ($request->password, $usuariosEncontrados['password'])) {
+            if (!password_verify ($request->password , $usuariosEncontrados['password'])) {
                 throw new \Exception("Senha incorreta");
             }
 
