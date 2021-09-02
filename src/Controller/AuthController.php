@@ -31,7 +31,12 @@ class AuthController extends Controller
                 throw new \Exception("Senha incorreta");
             }
 
-            return new JsonResponse(['mensagem' => 'Usuário logado com sucesso!'], 200);
+            $token_awt = $this->makeAWT(
+                $usuariosEncontrados['name'],
+                $usuariosEncontrados['id']
+            );
+
+            return new JsonResponse(['token_awt' => $token_awt], 200);
 
         } catch (\Exception $e) {
             return new JsonResponse(['mensagem' => $e->getMessage()], 500);
@@ -63,7 +68,6 @@ class AuthController extends Controller
             $username = $request->username;
             $password = $request->password;
 
-
             $pdo = DbConnectionFactory::get();
             $sql = "select * from Usuarios where name like '$username'";
             $statement = $pdo->prepare($sql);
@@ -74,11 +78,13 @@ class AuthController extends Controller
                 throw new \Exception("User already signed up.", 1);
             }
 
+            $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+
             $sql = "insert into Usuarios (name, password)
             values (:username, :password)";
             $statement = $pdo->prepare($sql);
             $statement->bindValue(':username', $username);
-            $statement->bindValue(':password', $password);
+            $statement->bindValue(':password', $passwordHash);
             $result = $statement->execute();
 
             $mensagem = '';

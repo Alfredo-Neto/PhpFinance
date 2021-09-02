@@ -51,7 +51,9 @@
 
                     if (response.ok) {
                         alert('Login feito com sucesso!');
+                        window.localStorage.setItem('token_awt', objetoJS.data.token_awt);
                         window.location.href = "contas.html";
+                        
                     } else {
                         alert(objetoJS.data.mensagem);
                     }
