@@ -8,6 +8,12 @@ use PhpFinance\Lib\JsonResponse;
 
 class AuthController extends Controller
 {
+    public function loadIndex($request)
+    {
+        header('Location: index.html');
+        exit();
+    }
+
     public function login($request)
     {
         try {
@@ -100,4 +106,9 @@ class AuthController extends Controller
             return new JsonResponse(['mensagem' => $e->getMessage()], 500);
         }
     } 
+
+    public function logout($request)
+    {
+        
+    }
 }
