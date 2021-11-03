@@ -79,6 +79,7 @@ class Kernel
         $rotas["POST"]["/login"] = ['AuthController', "login"];
         $rotas["POST"]["/register"] = ['AuthController', "register"];
         $rotas["GET"]["/logout"] = ['AuthController', "logout"];
+        $rotas["GET"]["/logados"] = ['IndexLoggedInController', "index"];
         $this->rotas = $rotas;
     }
 

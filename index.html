@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
     <title>Document</title>
 </head>
 <body>
@@ -20,6 +21,9 @@
         </div>
     </form>
 
+    <div>
+        <button id="busca-logados" onclick="buscaLogados()">Buscar Logados</button>
+    </div>
 
     <script>
         const form = document.getElementById('form');
@@ -64,6 +68,29 @@
             })
             .catch((error) => console.log(error));
         });
+
+        const buscaLogados = () => {
+            fetch('http://localhost:8000/logados', {
+                method: "GET",
+                body: null
+            })
+            .then(async(response) => {
+                let text = await response.text();
+                try {
+                    console.log('Debug antes de converter: ', text);
+                    let data = JSON.parse(text);
+                    console.log('Debug do Objeto data', data);
+
+                    if (response.ok) {
+                        alert('Busca realizada com sucesso!');
+                        console.log('Usuarios Logados', data.mensagem.usuarios);
+                    }
+                } catch (error) {
+                    console.error(error);
+                }
+            })
+            .catch((error) => console.log(error));
+        }
     </script>
 </body>
 </html>

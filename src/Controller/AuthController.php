@@ -2,6 +2,7 @@
 
 namespace PhpFinance\Controller;
 
+use DateTime;
 use Exception;
 use PhpFinance\Database\DbConnectionFactory;
 use PhpFinance\Lib\JsonResponse;
@@ -41,6 +42,19 @@ class AuthController extends Controller
                 $usuariosEncontrados['name'],
                 $usuariosEncontrados['id']
             );
+
+            $dataHora = new DateTime();
+            $dataHora = $dataHora->format("Y-m-d H:i:s");
+
+            //FAZER INSERÇÃO DO TOKEN NA TABELA TOKENS
+            $sql = "insert into Tokens(token, datahora, status, usuarioid)
+                    values(:token, :datahora, :status, :usuarioid)";
+            $statement = $pdo->prepare($sql);
+            $statement->bindValue(":token", $token_awt);
+            $statement->bindValue(":datahora", $dataHora);
+            $statement->bindValue(":status", 0);
+            $statement->bindValue(":usuarioid", $usuariosEncontrados['id']);
+            $statement->execute();
 
             return new JsonResponse(['token_awt' => $token_awt], 200);
 
