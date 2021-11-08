@@ -2,11 +2,13 @@
 
 namespace PhpFinance\Controller;
 
+use PDO;
 use Exception;
 use PDOException;
 use PhpFinance\Lib\JsonResponse;
 use PhpFinance\Controller\Controller;
 use PhpFinance\Lib\AuthorizationException;
+use PhpFinance\Database\DbConnectionFactory;
 
 class IndexLoggedInController extends Controller
 {
@@ -16,6 +18,7 @@ class IndexLoggedInController extends Controller
         'Victor' => 1
     ];
 
+    // BUSCAR NA TABELA DE TOKENS SE EXISTE ESSE TOKEN PARA ESSE USUÁRIO, E SE ESTÁ MARCADO COMO ATIVO
     public function index($request)
     {
         try {
@@ -26,7 +29,7 @@ class IndexLoggedInController extends Controller
             
             $this->validateAWT($request->token_awt);
 
-            return new JsonResponse(['usuarios' => $this->isLoggedIn], 200);
+            return new JsonResponse(['Logados' => $this->isLoggedIn], 200);
             
         } catch (PDOException $e) {
             file_put_contents('logBanco.txt', $e->getMessage() . '\n', FILE_APPEND);

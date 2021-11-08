@@ -52,7 +52,7 @@ class AuthController extends Controller
             $statement = $pdo->prepare($sql);
             $statement->bindValue(":token", $token_awt);
             $statement->bindValue(":datahora", $dataHora);
-            $statement->bindValue(":status", 0);
+            $statement->bindValue(":status", 1);
             $statement->bindValue(":usuarioid", $usuariosEncontrados['id']);
             $statement->execute();
 

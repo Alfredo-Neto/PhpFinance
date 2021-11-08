@@ -6,7 +6,6 @@ use PhpFinance\Lib\JsonResponse;
 
 class Kernel
 {
-    private $method;
     private $uri;
     private $rotas;
 
@@ -62,7 +61,7 @@ class Kernel
             $request->$key = $value;
         }
 
-        // $request->token_awt = isset($_SERVER['HTTP_AUTHORIZATION']) ? $_SERVER['HTTP_AUTHORIZATION'] : null;
+        $request->token_awt = isset($_SERVER['HTTP_AUTHORIZATION']) ? $_SERVER['HTTP_AUTHORIZATION'] : null;
 
         $uriTratamento = $_SERVER['REQUEST_URI'];
         $uriTratamento = explode('?', $uriTratamento);

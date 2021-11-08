@@ -4,11 +4,18 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
     <title>Document</title>
 </head>
 <body>
     
     <button id="logout"type="button" onclick="logOut()">Log out</button>
+
+    <h1>Contas</h1>
+
+    <div>
+        <button id="busca-logados" class="busca-logados" onclick="buscarLogados()">Buscar Logados</button>
+    </div>
 
     <script>
         let logOut = () => {
@@ -44,8 +51,37 @@
             });
         }
 
+        const buscarLogados = () => {
+            let headers = new Headers();
+            headers.append(
+                "Authorization",
+                window.localStorage.getItem("token_awt")
+            );
+
+            fetch('http://localhost:8000/logados', {
+                method: "get",
+                body: null,
+                headers: headers,
+            })
+            .then(async(response) => {
+                let text = await response.text();
+                try {
+                    console.log('Debug antes de converter: ', text);
+                    let objetoJS = JSON.parse(text);
+                    console.log('Debug do Objeto data', objetoJS);
+
+                    if (response.ok) {
+                        alert('Busca realizada com sucesso!');
+                        console.log('Usuarios Logados', objetoJS.data.Logados);
+                    }
+                } catch (error) {
+                    console.error(error);
+                }
+            })
+            .catch((error) => console.log(error));
+        }
+
         logOut();
     </script>
-    <h1>Contas</h1>
 </body>
 </html>

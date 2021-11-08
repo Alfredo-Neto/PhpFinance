@@ -46,10 +46,21 @@ class Controller
         $sql = "select * from Usuarios where id = $arrayDados[2] and name like '$arrayDados[1]'";
         $statement= $pdo->prepare($sql);
         $statement->execute();
-        $usuariosEncontrados = $statement->fetch(PDO::FETCH_ASSOC);
+        $usuarioEncontrado = $statement->fetch(PDO::FETCH_ASSOC);
 
-        if(!$usuariosEncontrados) {
+        if(!$usuarioEncontrado) {
             throw new AuthorizationException("Usuário inválido! Favor Relogar!", 1);
+        }
+
+        $sql = "SELECT * FROM Tokens WHERE token = :token and usuarioId = :usuarioId";
+        $statement = $pdo->prepare($sql);
+        $statement->bindValue(":token", $token_awt);
+        $statement->bindValue(":usuarioId", $usuarioEncontrado['id']);
+        $statement->execute();
+        $token = $statement->fetch(PDO::FETCH_ASSOC);
+
+        if (count($token) == 0 || $token['status'] == 0) {
+            throw new AuthorizationException ("Unauthorized", 1);
         }
 
         return $arrayDados;

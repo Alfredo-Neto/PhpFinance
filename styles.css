@@ -4,7 +4,7 @@
     box-sizing: border-box;
 }
 
-#busca-logados {
+.busca-logados {
     color: white;
     background: rgb(161, 108, 214);
     margin-top: 10px;
