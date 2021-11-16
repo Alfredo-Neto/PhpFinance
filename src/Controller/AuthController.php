@@ -4,7 +4,9 @@ namespace PhpFinance\Controller;
 
 use DateTime;
 use Exception;
+use PDOException;
 use PhpFinance\Database\DbConnectionFactory;
+use PhpFinance\Lib\AuthorizationException;
 use PhpFinance\Lib\JsonResponse;
 
 class AuthController extends Controller
@@ -18,7 +20,8 @@ class AuthController extends Controller
     public function login($request)
     {
         try {
-            if (!property_exists($request, 'username') && !property_exists($request, 'password') 
+            var_dump(property_exists($request,'username'));
+            if (!property_exists($request, 'username') || !property_exists($request, 'password') 
             || $request->username == null || $request->username == '' 
             || $request->password == null || $request->password == '') {
                 throw new Exception("Campos precisam ser preenchidos", 1);
@@ -123,6 +126,29 @@ class AuthController extends Controller
 
     public function logout($request)
     {
-        
+        try {
+
+            if (!property_exists($request, 'token_awt') || $request->token_awt == null
+            || $request->token_awt == '') {
+                throw new AuthorizationException("Please inform token_awt field", 1);
+            }
+
+            $this->validateAWT($request->token_awt);
+
+            $pdo = DbConnectionFactory::get();
+            $sql = "UPDATE Tokens SET status = '0' WHERE token = '$request->token_awt'";
+            $statement = $pdo->prepare($sql);
+            $statement->execute();
+    
+            return new JsonResponse(['mensagem' => 'Token invalidado com sucesso'], 200);
+
+        } catch (PDOException $e) {
+            file_put_contents('log.txt', $e->getMessage() . '\n', FILE_APPEND);
+            return new JsonResponse(['mensagem' => $e->getMessage()], 500);
+        } catch (AuthorizationException $e) {
+            return new JsonResponse(['mensagem' => $e->getMessage()], 401);
+        } catch (Exception $e) {
+            return new JsonResponse(['mensagem' => $e->getMessage()], 500);
+        }
     }
 }

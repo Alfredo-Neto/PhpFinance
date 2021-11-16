@@ -19,4 +19,9 @@ class JsonResponse
             'data' => $this->data
         ]);
     }
+
+    public function __get($key)
+    {
+        return $this->$key;
+    }
 }

@@ -2,12 +2,16 @@
 
 namespace phpFinance\Kernel;
 use stdClass;
+use PhpFinance\Lib\Route;
+use PhpFinance\Lib\Router;
 use PhpFinance\Lib\JsonResponse;
+use PhpFinance\Lib\RouteDefiner;
 
 class Kernel
 {
     private $uri;
     private $rotas;
+    private $router;
 
     public function bootstrap()
     {
@@ -16,6 +20,7 @@ class Kernel
            $this->setCorsHeaders();
            $this->handleRequest();
            $this->loadRoute();
+           $this->loadRouteNew();
            $this->callController();
         } catch (\Throwable $e) {
             $response = new JsonResponse([
@@ -77,17 +82,24 @@ class Kernel
         $rotas["GET"]["/"] = ['AuthController', "loadIndex"];
         $rotas["POST"]["/login"] = ['AuthController', "login"];
         $rotas["POST"]["/register"] = ['AuthController', "register"];
-        $rotas["GET"]["/logout"] = ['AuthController', "logout"];
+        $rotas["POST"]["/logout"] = ['AuthController', "logout"];
         $rotas["GET"]["/logados"] = ['IndexLoggedInController', "index"];
         $this->rotas = $rotas;
     }
 
-    private function callController()
-    {
+    private function loadRouteNew(){
+        $routeDefiner = new RouteDefiner(); //declarações de rotas
+        $router = new Router(); //guarda as declaraçoes e sabe procurar
+        $router->registerFromArray($routeDefiner->get());
+        $this->router = $router;
+    }
+
+    private function callController() {
         $response = null;
-        if (isset($this->rotas[$this->method][$this->uri])){
-            $meuController = $this->instanciaClasse($this->rotas[$this->method][$this->uri][0]);
-            $response = $this->executaMetodo($meuController, $this->rotas[$this->method][$this->uri][1], [$this->request]);
+        $route = $this->router->locate($this->method, $this->uri);
+        if($route !== false) {
+            $meuController = $this->instanciaClasse($route->controller);
+            $response = $this->executaMetodo($meuController, $route->function, [$this->request]);
         } else {
             file_put_contents('logRotas.html', "Rota não encontrada!" . '<br>', FILE_APPEND);
             $response = new JsonResponse(['mensagem' => 'Rota não encontrada'], 405);

@@ -7,10 +7,13 @@
             "email": "alfredoneto934@gmail.com"
         }
     ],
-    "require": {},
+    "require": {
+        "phpunit/phpunit": "^9.5"
+    },
     "autoload": {
         "psr-4": {
-            "PhpFinance\\": "src/"
+            "PhpFinance\\": "src/",
+            "PhpFinance\\Tests\\": "tests/"
         }
     }
 }

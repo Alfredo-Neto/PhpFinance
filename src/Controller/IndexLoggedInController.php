@@ -32,7 +32,7 @@ class IndexLoggedInController extends Controller
             return new JsonResponse(['Logados' => $this->isLoggedIn], 200);
             
         } catch (PDOException $e) {
-            file_put_contents('logBanco.txt', $e->getMessage() . '\n', FILE_APPEND);
+            file_put_contents('log.txt', $e->getMessage() . '\n', FILE_APPEND);
             return new JsonResponse(['mensagem' => $e->getMessage()], 500);
         } catch (AuthorizationException $e) {
             return new JsonResponse (['mensagem' => $e->getMessage()], 401);

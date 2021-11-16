@@ -23,12 +23,19 @@
             let objetoJS = null;
             logOut.addEventListener('click', () => {
                
+
                /*
                     http://localhost:8000/logout'
                     http://localhost:8000
                */
+
+                let headers = new Headers();
+                headers.append("Authorization", window.localStorage.getItem("token_awt"));
+
                 fetch('http://localhost:8000/logout', {
-                    method: 'get'
+                    method: 'post',
+                    headers: headers,
+                    body: null
                 })
                 .then(async (response) => {
                     const text = await response.text();
